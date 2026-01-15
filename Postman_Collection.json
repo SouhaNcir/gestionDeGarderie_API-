@@ -1,0 +1,277 @@
+{
+  "info": {
+    "name": "Gestion de Garderie API",
+    "description": "API Postman pour la gestion de garderie avec authentification JWT",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentification",
+      "item": [
+        {
+          "name": "S'enregistrer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.environment.set('user_id', pm.response.json().user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john_doe\",\n  \"email\": \"john@example.com\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"password\": \"SecurePass123\",\n  \"password_confirm\": \"SecurePass123\",\n  \"role\": \"parent\",\n  \"telephone\": \"0123456789\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register", ""]
+            }
+          }
+        },
+        {
+          "name": "Se connecter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.environment.set('access_token', pm.response.json().access);",
+                  "    pm.environment.set('refresh_token', pm.response.json().refresh);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john_doe\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login", ""]
+            }
+          }
+        },
+        {
+          "name": "Renouveler le token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh", ""]
+            }
+          }
+        },
+        {
+          "name": "Récupérer le profil",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me", ""]
+            }
+          }
+        },
+        {
+          "name": "Mettre à jour le profil",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Jonathan\",\n  \"last_name\": \"Doe\",\n  \"email\": \"jonathan@example.com\",\n  \"telephone\": \"0987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/me/update/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me", "update", ""]
+            }
+          }
+        },
+        {
+          "name": "Changer le mot de passe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"old_password\": \"SecurePass123\",\n  \"new_password\": \"NewSecurePass456\",\n  \"new_password_confirm\": \"NewSecurePass456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/change-password/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "change-password", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enfants",
+      "item": [
+        {
+          "name": "Lister les enfants",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/enfants/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "enfants", ""]
+            }
+          }
+        },
+        {
+          "name": "Créer un enfant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Marie\",\n  \"date_naissance\": \"2020-05-15\",\n  \"sexe\": \"F\",\n  \"parent\": 1,\n  \"groupe\": \"Groupe A\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/enfants/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "enfants", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Parents",
+      "item": [
+        {
+          "name": "Lister les parents",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/parents/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "parents", ""]
+            }
+          }
+        },
+        {
+          "name": "Créer un parent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Jean\",\n  \"telephone\": \"0612345678\",\n  \"email\": \"jean.dupont@example.com\",\n  \"adresse\": \"123 rue de la paix\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/parents/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "parents", ""]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    }
+  ]
+}
